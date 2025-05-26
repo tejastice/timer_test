@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>シンプルタイマー</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        
+        .timer-container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .timer-display {
+            font-size: 72px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 30px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .start-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .start-btn:hover {
+            background-color: #45a049;
+        }
+        
+        .stop-btn {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .stop-btn:hover {
+            background-color: #da190b;
+        }
+        
+        .reset-btn {
+            background-color: #008CBA;
+            color: white;
+        }
+        
+        .reset-btn:hover {
+            background-color: #007399;
+        }
+    </style>
+</head>
+<body>
+    <div class="timer-container">
+        <div class="timer-display" id="timer">00:00:00</div>
+        <div class="controls">
+            <button class="start-btn" id="startBtn">スタート</button>
+            <button class="stop-btn" id="stopBtn">ストップ</button>
+            <button class="reset-btn" id="resetBtn">リセット</button>
+        </div>
+    </div>
+
+    <script>
+        let startTime = 0;
+        let elapsedTime = 0;
+        let timerInterval = null;
+        
+        const timerDisplay = document.getElementById('timer');
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        
+        function formatTime(time) {
+            const hours = Math.floor(time / 3600000);
+            const minutes = Math.floor((time % 3600000) / 60000);
+            const seconds = Math.floor((time % 60000) / 1000);
+            
+            return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+        }
+        
+        function pad(num) {
+            return num.toString().padStart(2, '0');
+        }
+        
+        function updateTimer() {
+            const currentTime = Date.now();
+            elapsedTime = currentTime - startTime;
+            timerDisplay.textContent = formatTime(elapsedTime);
+        }
+        
+        function start() {
+            if (!timerInterval) {
+                startTime = Date.now() - elapsedTime;
+                timerInterval = setInterval(updateTimer, 10);
+                startBtn.textContent = '一時停止';
+            } else {
+                stop();
+                startBtn.textContent = 'スタート';
+            }
+        }
+        
+        function stop() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+        }
+        
+        function reset() {
+            stop();
+            elapsedTime = 0;
+            timerDisplay.textContent = '00:00:00';
+            startBtn.textContent = 'スタート';
+        }
+        
+        startBtn.addEventListener('click', start);
+        stopBtn.addEventListener('click', stop);
+        resetBtn.addEventListener('click', reset);
+    </script>
+</body>
+</html>
