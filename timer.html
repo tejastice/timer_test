@@ -3,103 +3,317 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>シンプルタイマー</title>
+    <title>⏰ Neon Timer</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Orbitron', monospace;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* Animated background particles */
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            animation: float 20s infinite;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100px);
+                opacity: 0;
+            }
         }
         
         .timer-container {
-            background-color: white;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 60px 80px;
+            border-radius: 30px;
+            box-shadow: 
+                0 0 40px rgba(138, 43, 226, 0.5),
+                inset 0 0 20px rgba(255, 255, 255, 0.1);
             text-align: center;
+            position: relative;
+            z-index: 10;
+            border: 2px solid rgba(138, 43, 226, 0.3);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from {
+                box-shadow: 
+                    0 0 40px rgba(138, 43, 226, 0.5),
+                    inset 0 0 20px rgba(255, 255, 255, 0.1);
+            }
+            to {
+                box-shadow: 
+                    0 0 60px rgba(138, 43, 226, 0.8),
+                    inset 0 0 30px rgba(255, 255, 255, 0.2);
+            }
+        }
+        
+        .timer-title {
+            font-size: 24px;
+            color: #fff;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            opacity: 0.8;
         }
         
         .timer-display {
-            font-size: 72px;
-            font-weight: bold;
-            color: #333;
+            font-size: 96px;
+            font-weight: 900;
+            background: linear-gradient(45deg, #00ff88, #00ffff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 40px;
+            text-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+            animation: pulse 2s ease-in-out infinite;
+            letter-spacing: 8px;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.02);
+            }
+        }
+        
+        .milliseconds {
+            font-size: 24px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: -20px;
             margin-bottom: 30px;
-            font-family: 'Courier New', monospace;
         }
         
         .controls {
             display: flex;
-            gap: 15px;
+            gap: 20px;
             justify-content: center;
+            flex-wrap: wrap;
         }
         
         button {
-            padding: 15px 30px;
-            font-size: 18px;
+            padding: 18px 40px;
+            font-size: 16px;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
             border: none;
-            border-radius: 8px;
+            border-radius: 50px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            color: white;
+        }
+        
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        button:hover::before {
+            width: 300px;
+            height: 300px;
         }
         
         .start-btn {
-            background-color: #4CAF50;
-            color: white;
+            background: linear-gradient(45deg, #00ff88, #00cc66);
+            box-shadow: 0 4px 15px rgba(0, 255, 136, 0.4);
         }
         
         .start-btn:hover {
-            background-color: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 255, 136, 0.6);
         }
         
         .stop-btn {
-            background-color: #f44336;
-            color: white;
+            background: linear-gradient(45deg, #ff0066, #cc0052);
+            box-shadow: 0 4px 15px rgba(255, 0, 102, 0.4);
         }
         
         .stop-btn:hover {
-            background-color: #da190b;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 0, 102, 0.6);
         }
         
         .reset-btn {
-            background-color: #008CBA;
-            color: white;
+            background: linear-gradient(45deg, #00ccff, #0099cc);
+            box-shadow: 0 4px 15px rgba(0, 204, 255, 0.4);
         }
         
         .reset-btn:hover {
-            background-color: #007399;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 204, 255, 0.6);
+        }
+        
+        /* Icon container */
+        .icon-container {
+            margin-bottom: 30px;
+            font-size: 80px;
+            animation: rotate 20s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        /* Sound toggle */
+        .sound-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .sound-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+        
+        .sound-toggle.muted {
+            opacity: 0.5;
         }
     </style>
 </head>
 <body>
+    <div class="particles" id="particles"></div>
+    
     <div class="timer-container">
+        <div class="sound-toggle" id="soundToggle" title="サウンドON/OFF">
+            🔊
+        </div>
+        
+        <div class="icon-container">⏰</div>
+        <h1 class="timer-title">Neon Timer</h1>
         <div class="timer-display" id="timer">00:00:00</div>
+        <div class="milliseconds" id="milliseconds">.000</div>
         <div class="controls">
-            <button class="start-btn" id="startBtn">スタート</button>
-            <button class="stop-btn" id="stopBtn">ストップ</button>
-            <button class="reset-btn" id="resetBtn">リセット</button>
+            <button class="start-btn" id="startBtn">▶ スタート</button>
+            <button class="stop-btn" id="stopBtn">⏸ ストップ</button>
+            <button class="reset-btn" id="resetBtn">↺ リセット</button>
         </div>
     </div>
 
     <script>
+        // Create particles
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 50; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 20 + 's';
+            particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+            particlesContainer.appendChild(particle);
+        }
+        
+        // Timer functionality
         let startTime = 0;
         let elapsedTime = 0;
         let timerInterval = null;
+        let soundEnabled = true;
         
         const timerDisplay = document.getElementById('timer');
+        const millisecondsDisplay = document.getElementById('milliseconds');
         const startBtn = document.getElementById('startBtn');
         const stopBtn = document.getElementById('stopBtn');
         const resetBtn = document.getElementById('resetBtn');
+        const soundToggle = document.getElementById('soundToggle');
+        
+        // Create audio context for sounds
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playSound(frequency, duration) {
+            if (!soundEnabled) return;
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = frequency;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duration);
+        }
         
         function formatTime(time) {
             const hours = Math.floor(time / 3600000);
             const minutes = Math.floor((time % 3600000) / 60000);
             const seconds = Math.floor((time % 60000) / 1000);
+            const milliseconds = time % 1000;
             
-            return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+            return {
+                display: `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`,
+                milliseconds: `.${milliseconds.toString().padStart(3, '0')}`
+            };
         }
         
         function pad(num) {
@@ -109,17 +323,20 @@
         function updateTimer() {
             const currentTime = Date.now();
             elapsedTime = currentTime - startTime;
-            timerDisplay.textContent = formatTime(elapsedTime);
+            const time = formatTime(elapsedTime);
+            timerDisplay.textContent = time.display;
+            millisecondsDisplay.textContent = time.milliseconds;
         }
         
         function start() {
             if (!timerInterval) {
                 startTime = Date.now() - elapsedTime;
                 timerInterval = setInterval(updateTimer, 10);
-                startBtn.textContent = '一時停止';
+                startBtn.innerHTML = '⏸ 一時停止';
+                playSound(800, 0.1);
             } else {
                 stop();
-                startBtn.textContent = 'スタート';
+                startBtn.innerHTML = '▶ スタート';
             }
         }
         
@@ -127,6 +344,7 @@
             if (timerInterval) {
                 clearInterval(timerInterval);
                 timerInterval = null;
+                playSound(400, 0.1);
             }
         }
         
@@ -134,12 +352,33 @@
             stop();
             elapsedTime = 0;
             timerDisplay.textContent = '00:00:00';
-            startBtn.textContent = 'スタート';
+            millisecondsDisplay.textContent = '.000';
+            startBtn.innerHTML = '▶ スタート';
+            playSound(600, 0.2);
+        }
+        
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            soundToggle.textContent = soundEnabled ? '🔊' : '🔇';
+            soundToggle.classList.toggle('muted', !soundEnabled);
         }
         
         startBtn.addEventListener('click', start);
         stopBtn.addEventListener('click', stop);
         resetBtn.addEventListener('click', reset);
+        soundToggle.addEventListener('click', toggleSound);
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                start();
+            } else if (e.code === 'KeyR') {
+                reset();
+            } else if (e.code === 'KeyS') {
+                stop();
+            }
+        });
     </script>
 </body>
 </html>
